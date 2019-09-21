@@ -1,14 +1,14 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_image_cache/src/cache_manager.dart';
+import 'package:firebase_image_cache/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FirebaseImage extends ImageProvider<FirebaseImage> {
-  /// The URI of the image
-  final String location;
-
   // Should the image be cached (optional)
   final bool shouldCache;
 
@@ -19,7 +19,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   final int maxSizeBytes;
 
   /// The Firebase app to make the request from (optional)
-  final FirebaseApp _firebaseApp;
+  final FirebaseApp firebaseApp;
+
+  ///
+  FirebaseImageObject _imageObject;
 
   /// TODO: Add descriptions
   ///
@@ -27,32 +30,59 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [shouldCache]
   /// [maxSizeBytes]
   /// [firebaseApp]
-  const FirebaseImage(
-    this.location, {
+  FirebaseImage(
+    String location, {
     this.shouldCache = true,
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     FirebaseApp firebaseApp,
-  }) : this._firebaseApp = firebaseApp;
+  })  : this.firebaseApp = firebaseApp,
+        _imageObject = FirebaseImageObject(
+          bucket: _getBucket(location),
+          remotePath: _getImagePath(location),
+          reference: _getImageRef(location, firebaseApp),
+        );
 
-  String _getBucket() {
-    final uri = Uri.parse(this.location);
+  static String _getBucket(String location) {
+    final uri = Uri.parse(location);
     return '${uri.scheme}://${uri.authority}';
   }
 
-  String _getImagePath() {
-    final uri = Uri.parse(this.location);
+  static String _getImagePath(String location) {
+    final uri = Uri.parse(location);
     return uri.path;
   }
 
-  StorageReference _getImageRef() {
-    FirebaseStorage storage = FirebaseStorage(
-        app: _firebaseApp, storageBucket: this._getBucket());
-    return storage.ref().child(this._getImagePath());
+  static StorageReference _getImageRef(
+      String location, FirebaseApp firebaseApp) {
+    FirebaseStorage storage =
+        FirebaseStorage(app: firebaseApp, storageBucket: _getBucket(location));
+    return storage.ref().child(_getImagePath(location));
   }
 
   Future<Codec> _fetchImage() async {
-    final bytes = await _getImageRef().getData(this.maxSizeBytes);
+    Uint8List bytes;
+    FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager();
+
+    if (shouldCache) {
+      await cacheManager.open();
+      FirebaseImageObject localObject =
+          await cacheManager.get(_imageObject.uri);
+
+      if (localObject != null) {
+        bytes = await cacheManager.localFileBytes(localObject);
+        if (bytes == null) {
+          bytes = await cacheManager.upsertRemoteFileToCache(
+              _imageObject, this.maxSizeBytes);
+        }
+      } else {
+        bytes = await cacheManager.upsertRemoteFileToCache(
+            _imageObject, this.maxSizeBytes);
+      }
+    } else {
+      bytes = await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+    }
+
     return await PaintingBinding.instance.instantiateImageCodec(bytes);
   }
 
