@@ -9,27 +9,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FirebaseImage extends ImageProvider<FirebaseImage> {
-  // Should the image be cached (optional)
+  // Default: True. Specified whether or not an image should be cached (optional)
   final bool shouldCache;
 
-  /// The scale to display the image at (optional)
+  /// Default: 1.0. The scale to display the image at (optional)
   final double scale;
 
-  /// The maximum size in bytes to be allocated on the device for the image (optional)
+  /// Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   final int maxSizeBytes;
 
-  /// The Firebase app to make the request from (optional)
+  /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   final FirebaseApp firebaseApp;
 
-  ///
+  /// The model for the image object
   FirebaseImageObject _imageObject;
 
-  /// TODO: Add descriptions
+  /// Fetches, saves and returns an ImageProvider for any image in a readable Firebase Cloud Storeage bucket.
   ///
-  /// [location]
-  /// [shouldCache]
-  /// [maxSizeBytes]
-  /// [firebaseApp]
+  /// [location] The URI of the image, in the bucket, to be displayed
+  /// [shouldCache] Default: True. Specified whether or not an image should be cached (optional)
+  /// [scale] Default: 1.0. The scale to display the image at (optional)
+  /// [maxSizeBytes] Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
+  /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   FirebaseImage(
     String location, {
     this.shouldCache = true,
@@ -80,7 +81,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
             _imageObject, this.maxSizeBytes);
       }
     } else {
-      bytes = await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+      bytes =
+          await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
     }
 
     cacheManager.close();

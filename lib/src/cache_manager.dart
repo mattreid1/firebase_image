@@ -43,7 +43,7 @@ class FirebaseImageCacheManager {
     return await db.update(
       table,
       model.toMap(),
-      where: "id = ?",
+      where: 'id = ?',
       whereArgs: [model.id],
     );
   }
@@ -60,7 +60,7 @@ class FirebaseImageCacheManager {
     List<Map> maps = await db.query(
       table,
       columns: null,
-      where: "uri = ?",
+      where: 'uri = ?',
       whereArgs: [uri],
     );
     if (maps.length > 0) {
@@ -79,7 +79,7 @@ class FirebaseImageCacheManager {
   Future<int> delete(int id) async {
     return await db.delete(
       table,
-      where: "id = ?",
+      where: 'id = ?',
       whereArgs: [id],
     );
   }

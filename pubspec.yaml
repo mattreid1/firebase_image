@@ -1,5 +1,5 @@
 name: firebase_image
-description: A Flutter package to provide images from Firebase Storage via ImageProvider with caching.
+description: A cached Flutter ImageProvider for Firebase Cloud Storage image objects.
 version: 0.0.1
 author: Matthew Reid <matthew.reid@urbanexp.ltd>
 homepage: https://github.com/mattreid1/firebase_image
