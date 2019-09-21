@@ -34,7 +34,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     FirebaseApp firebaseApp,
-  }) : _firebaseApp = firebaseApp;
+  }) : this._firebaseApp = firebaseApp;
 
   String _getBucket() {
     final uri = Uri.parse(this.location);
@@ -46,11 +46,14 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return uri.path;
   }
 
-  Future<Codec> _fetchImage() async {
+  StorageReference _getImageRef() {
     FirebaseStorage storage = FirebaseStorage(
         app: _firebaseApp, storageBucket: this._getBucket());
-    final bytes = await storage.ref().child(this._getImagePath()).getData(this.maxSizeBytes);
+    return storage.ref().child(this._getImagePath());
+  }
 
+  Future<Codec> _fetchImage() async {
+    final bytes = await _getImageRef().getData(this.maxSizeBytes);
     return await PaintingBinding.instance.instantiateImageCodec(bytes);
   }
 
