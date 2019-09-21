@@ -36,12 +36,20 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     FirebaseApp firebaseApp,
   }) : _firebaseApp = firebaseApp;
 
-  Future<Codec> _fetch() async {
-    final uri = Uri.parse(location);
+  String _getBucket() {
+    final uri = Uri.parse(this.location);
+    return '${uri.scheme}://${uri.authority}';
+  }
 
+  String _getImagePath() {
+    final uri = Uri.parse(this.location);
+    return uri.path;
+  }
+
+  Future<Codec> _fetchImage() async {
     FirebaseStorage storage = FirebaseStorage(
-        app: _firebaseApp, storageBucket: '${uri.scheme}://${uri.authority}');
-    final bytes = await storage.ref().child(uri.path).getData(maxSizeBytes);
+        app: _firebaseApp, storageBucket: this._getBucket());
+    final bytes = await storage.ref().child(this._getImagePath()).getData(this.maxSizeBytes);
 
     return await PaintingBinding.instance.instantiateImageCodec(bytes);
   }
@@ -54,6 +62,6 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   @override
   ImageStreamCompleter load(FirebaseImage key) {
     return MultiFrameImageStreamCompleter(
-        codec: key._fetch(), scale: key.scale);
+        codec: key._fetchImage(), scale: key.scale);
   }
 }
