@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:firebase_image_cache/src/image_cache_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
