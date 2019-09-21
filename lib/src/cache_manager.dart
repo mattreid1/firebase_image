@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -56,7 +59,7 @@ class FirebaseImageCacheManager {
     }
   }
 
-  Future<FirebaseImageObject> get(String uri) async {
+  Future<FirebaseImageObject> get(String uri, FirebaseImage image) async {
     List<Map> maps = await db.query(
       table,
       columns: null,
@@ -64,9 +67,30 @@ class FirebaseImageCacheManager {
       whereArgs: [uri],
     );
     if (maps.length > 0) {
-      return new FirebaseImageObject.fromMap(maps.first);
+      FirebaseImageObject returnObject =
+          new FirebaseImageObject.fromMap(maps.first);
+      returnObject.reference = getImageRef(returnObject, image.firebaseApp);
+      checkForUpdate(returnObject, image); // Check for update in background
+      return returnObject;
     }
     return null;
+  }
+
+  StorageReference getImageRef(
+      FirebaseImageObject object, FirebaseApp firebaseApp) {
+    FirebaseStorage storage =
+        FirebaseStorage(app: firebaseApp, storageBucket: object.bucket);
+    return storage.ref().child(object.remotePath);
+  }
+
+  Future<void> checkForUpdate(
+      FirebaseImageObject object, FirebaseImage image) async {
+    int remoteVersion =
+        (await object.reference.getMetadata()).updatedTimeMillis;
+    if (remoteVersion != object.version) {
+      // If true, download new image for next load
+      await this.upsertRemoteFileToCache(object, image.maxSizeBytes);
+    }
   }
 
   Future<List<FirebaseImageObject>> getAll() async {
@@ -100,7 +124,7 @@ class FirebaseImageCacheManager {
       FirebaseImageObject object, int maxSizeBytes) async {
     object.version = (await object.reference.getMetadata()).updatedTimeMillis;
     Uint8List bytes = await remoteFileBytes(object, maxSizeBytes);
-    putFile(object, bytes);
+    await putFile(object, bytes);
     return bytes;
   }
 
