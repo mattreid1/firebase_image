@@ -1,3 +1,7 @@
+## [0.1.0] - 22/09/2019
+* Added example
+* Formatted code
+
 ## [0.0.1] - 22/09/2019
 
 * Can download, save and render images from Firebase Cloud Storage.

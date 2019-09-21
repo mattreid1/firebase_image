@@ -48,7 +48,7 @@ class IconImage extends StatelessWidget {
 
 ## To Do
 
-- [ ] Add examples to [pub.dev](https://pub.dartlang.org/packages/firebase_image#-example-tab-)
+- [x] Add examples to [pub.dev](https://pub.dartlang.org/packages/firebase_image#-example-tab-)
 - [ ] Clear items from cache if they haven't been accessed after a certain amount of time (2 weeks?)
 - [ ] Add more documentation/comments
 - [ ] Create unit tests
