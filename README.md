@@ -1,4 +1,4 @@
-# firebase_image_cache
+# firebase_image
 
 A new Flutter package project.
 

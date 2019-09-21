@@ -1,3 +1,3 @@
-library firebase_image_cache;
+library firebase_image;
 
 export 'src/firebase_image.dart';

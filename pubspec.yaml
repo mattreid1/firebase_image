@@ -1,8 +1,8 @@
-name: firebase_image_cache
+name: firebase_image
 description: A Flutter package to provide images from Firebase Storage via ImageProvider with caching.
 version: 0.0.1
 author: Matthew Reid <matthew.reid@urbanexp.ltd>
-homepage: https://github.com/mattreid1/firebase_image_cache
+homepage: https://github.com/mattreid1/firebase_image
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

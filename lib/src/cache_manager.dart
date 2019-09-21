@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_image_cache/src/image_object.dart';
+import 'package:firebase_image/src/image_object.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 class FirebaseImageCacheManager {
-  static const String key = 'firebase_image_cache';
+  static const String key = 'firebase_image';
 
   Database db;
   String dbName = '$key.db';

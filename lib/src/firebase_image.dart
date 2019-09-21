@@ -2,8 +2,8 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_image_cache/src/cache_manager.dart';
-import 'package:firebase_image_cache/src/image_object.dart';
+import 'package:firebase_image/src/cache_manager.dart';
+import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +83,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       bytes = await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
     }
 
+    cacheManager.close();
     return await PaintingBinding.instance.instantiateImageCodec(bytes);
   }
 
