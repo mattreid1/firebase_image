@@ -1,7 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseImageObject {
-  int id;
   int version;
   StorageReference reference;
   String localPath;
@@ -10,7 +9,6 @@ class FirebaseImageObject {
   String uri;
 
   FirebaseImageObject({
-    this.id = -1,
     this.version = -1,
     this.reference,
     this.localPath,
@@ -20,7 +18,6 @@ class FirebaseImageObject {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': this.id,
       'version': this.version,
       'localPath': this.localPath,
       'bucket': this.bucket,
@@ -30,7 +27,6 @@ class FirebaseImageObject {
   }
 
   FirebaseImageObject.fromMap(Map<String, dynamic> map) {
-    this.id = map["id"] ?? -1;
     this.version = map["version"] ?? -1;
     this.reference = map["reference"] ?? null;
     this.localPath = map["localPath"] ?? null;

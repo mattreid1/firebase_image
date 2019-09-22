@@ -85,7 +85,6 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
     }
 
-    cacheManager.close();
     return await PaintingBinding.instance.instantiateImageCodec(bytes);
   }
 

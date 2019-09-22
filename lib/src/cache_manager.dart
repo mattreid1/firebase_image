@@ -23,11 +23,10 @@ class FirebaseImageCacheManager {
       onCreate: (Database db, int version) async {
         await db.execute('''
           CREATE TABLE $table (
-            id INTEGER PRIMARY KEY, 
+            uri TEXT PRIMARY KEY,
             remotePath TEXT, 
             localPath TEXT, 
             bucket TEXT, 
-            uri TEXT,
             version INTEGER
           )
         ''');
@@ -38,25 +37,36 @@ class FirebaseImageCacheManager {
   }
 
   Future<FirebaseImageObject> insert(FirebaseImageObject model) async {
-    model.id = await db.insert('images', model.toMap());
+    await db.insert('images', model.toMap());
     return model;
   }
 
-  Future<int> update(FirebaseImageObject model) async {
-    return await db.update(
+  Future<FirebaseImageObject> update(FirebaseImageObject model) async {
+    await db.update(
       table,
       model.toMap(),
-      where: 'id = ?',
-      whereArgs: [model.id],
+      where: 'uri = ?',
+      whereArgs: [model.uri],
     );
+    return model;
   }
 
-  Future<dynamic> upsert(FirebaseImageObject object) async {
-    if (object.id == -1) {
-      return await insert(object);
-    } else {
+  Future<FirebaseImageObject> upsert(FirebaseImageObject object) async {
+    if (await checkDatabaseForEntry(object)) {
       return await update(object);
+    } else {
+      return await insert(object);
     }
+  }
+
+  Future<bool> checkDatabaseForEntry(FirebaseImageObject object) async {
+    List<Map> maps = await db.query(
+      table,
+      columns: null,
+      where: 'uri = ?',
+      whereArgs: [object.uri],
+    );
+    return maps.length > 0;
   }
 
   Future<FirebaseImageObject> get(String uri, FirebaseImage image) async {
@@ -100,11 +110,11 @@ class FirebaseImageCacheManager {
     });
   }
 
-  Future<int> delete(int id) async {
+  Future<int> delete(String uri) async {
     return await db.delete(
       table,
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'uri = ?',
+      whereArgs: [uri],
     );
   }
 
@@ -130,7 +140,11 @@ class FirebaseImageCacheManager {
 
   Future<FirebaseImageObject> putFile(
       FirebaseImageObject object, final bytes) async {
-    var file = await new File(basePath).writeAsBytes(bytes);
+    String path = basePath + "/" + object.remotePath;
+    path = path.replaceAll("//", "/");
+    //print(join(basePath, object.remotePath)); Join isn't working?
+    await new File(path).create(recursive: true);
+    var file = await new File(path).writeAsBytes(bytes);
     object.localPath = file.path;
     return await upsert(object);
   }

@@ -1,3 +1,7 @@
+## [0.1.1] - 22/09/2019
+* Database primary key bug fix
+* Misc. bug fixes
+
 ## [0.1.0] - 22/09/2019
 * Added example
 * Formatted code
