@@ -98,4 +98,17 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return MultiFrameImageStreamCompleter(
         codec: key._fetchImage(), scale: key.scale);
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final FirebaseImage typedOther = other;
+    return _imageObject.uri == typedOther._imageObject.uri && this.scale == typedOther.scale;
+  }
+
+  @override
+  int get hashCode => hashValues(_imageObject.uri, this.scale);
+
+  @override
+  String toString() => '$runtimeType("${_imageObject.uri}", scale: ${this.scale})';
 }

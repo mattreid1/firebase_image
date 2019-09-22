@@ -1,10 +1,13 @@
+## [0.1.2] - 22/09/2019
+* Hash code implemented (allows for things like [Hero widgets](https://flutter.dev/docs/development/ui/animations/hero-animations)).
+
 ## [0.1.1] - 22/09/2019
-* Database primary key bug fix
-* Misc. bug fixes
+* Database primary key bug fix.
+* Misc. bug fixes.
 
 ## [0.1.0] - 22/09/2019
-* Added example
-* Formatted code
+* Added example.
+* Formatted code.
 
 ## [0.0.1] - 22/09/2019
 
