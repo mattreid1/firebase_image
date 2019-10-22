@@ -1,3 +1,7 @@
+## [0.1.3] - 22/10/2019
+* Updated author information to match verified publisher account.
+* Formatted code.
+
 ## [0.1.2] - 22/09/2019
 * Hash code implemented (allows for things like [Hero widgets](https://flutter.dev/docs/development/ui/animations/hero-animations)).
 

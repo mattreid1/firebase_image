@@ -103,12 +103,14 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) return false;
     final FirebaseImage typedOther = other;
-    return _imageObject.uri == typedOther._imageObject.uri && this.scale == typedOther.scale;
+    return _imageObject.uri == typedOther._imageObject.uri &&
+        this.scale == typedOther.scale;
   }
 
   @override
   int get hashCode => hashValues(_imageObject.uri, this.scale);
 
   @override
-  String toString() => '$runtimeType("${_imageObject.uri}", scale: ${this.scale})';
+  String toString() =>
+      '$runtimeType("${_imageObject.uri}", scale: ${this.scale})';
 }
