@@ -1,3 +1,7 @@
+## [0.1.4] - 27/11/2019
+* Added ability to get image as bytes.
+* Formatted test file.
+
 ## [0.1.3] - 22/10/2019
 * Updated author information to match verified publisher account.
 * Formatted code.

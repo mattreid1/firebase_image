@@ -44,6 +44,11 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           reference: _getImageRef(location, firebaseApp),
         );
 
+  /// Returns the image as bytes
+  Future<Uint8List> getBytes() {
+    return _fetchImage();
+  }
+
   static String _getBucket(String location) {
     final uri = Uri.parse(location);
     return '${uri.scheme}://${uri.authority}';
@@ -61,7 +66,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return storage.ref().child(_getImagePath(location));
   }
 
-  Future<Codec> _fetchImage() async {
+  Future<Uint8List> _fetchImage() async {
     Uint8List bytes;
     FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager();
 
@@ -85,7 +90,12 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
     }
 
-    return await PaintingBinding.instance.instantiateImageCodec(bytes);
+    return bytes;
+  }
+
+  Future<Codec> _fetchImageCodec() async {
+    return await PaintingBinding.instance
+        .instantiateImageCodec(await _fetchImage());
   }
 
   @override
@@ -96,7 +106,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   @override
   ImageStreamCompleter load(FirebaseImage key) {
     return MultiFrameImageStreamCompleter(
-        codec: key._fetchImage(), scale: key.scale);
+      codec: key._fetchImageCodec(),
+      scale: key.scale,
+    );
   }
 
   @override
