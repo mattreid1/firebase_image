@@ -1,3 +1,6 @@
+## [0.1.5] - 26/12/2019
+* Fixes/image provider compilation issue from [Druchinin/fixes/imageProviderCompilationIssue.](https://github.com/mattreid1/firebase_image/pull/3)
+
 ## [0.1.4] - 27/11/2019
 * Added ability to get image as bytes.
 * Formatted test file.
