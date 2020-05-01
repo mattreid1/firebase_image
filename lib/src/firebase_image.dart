@@ -18,6 +18,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   final int maxSizeBytes;
 
+  /// Default: True. Specifies whether or not we should check object metadata to determine if we should refresh the cached image.
+  final bool shouldRefresh;
+
   /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   final FirebaseApp firebaseApp;
 
@@ -36,6 +39,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.shouldCache = true,
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
+    this.shouldRefresh = true,
     FirebaseApp firebaseApp,
   })  : this.firebaseApp = firebaseApp,
         _imageObject = FirebaseImageObject(
@@ -68,7 +72,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
 
   Future<Uint8List> _fetchImage() async {
     Uint8List bytes;
-    FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager();
+    FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager(
+      shouldRefresh,
+    );
 
     if (shouldCache) {
       await cacheManager.open();

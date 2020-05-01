@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
           'gs://bucket123/userIcon123.jpg',
           shouldCache: true, // The image should be cached (default: True)
           maxSizeBytes: 3000 * 1000, // 3MB max file size (default: 2.5MB)
+          shouldRefresh: false // Switch off update checking
         ),
         width: 100,
       ),

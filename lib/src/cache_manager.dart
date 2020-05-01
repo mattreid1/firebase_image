@@ -17,6 +17,12 @@ class FirebaseImageCacheManager {
   String table = 'images';
   String basePath;
 
+  final bool shouldRefresh;
+
+  FirebaseImageCacheManager(
+    this.shouldRefresh,
+  );
+
   Future open() async {
     db = await openDatabase(
       join(await getDatabasesPath(), dbName),
@@ -80,7 +86,9 @@ class FirebaseImageCacheManager {
       FirebaseImageObject returnObject =
           new FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
-      checkForUpdate(returnObject, image); // Check for update in background
+      if (this.shouldRefresh) {
+        checkForUpdate(returnObject, image); // Check for update in background
+      }
       return returnObject;
     }
     return null;
@@ -132,7 +140,9 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes) async {
-    object.version = (await object.reference.getMetadata()).updatedTimeMillis;
+    if (this.shouldRefresh) {
+      object.version = (await object.reference.getMetadata()).updatedTimeMillis;
+    }
     Uint8List bytes = await remoteFileBytes(object, maxSizeBytes);
     await putFile(object, bytes);
     return bytes;
