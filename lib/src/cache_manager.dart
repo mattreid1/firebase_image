@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +17,12 @@ class FirebaseImageCacheManager {
   String dbName = '$key.db';
   String table = 'images';
   String basePath;
+
+  final CacheRefreshStrategy cacheRefreshStrategy;
+
+  FirebaseImageCacheManager(
+    this.cacheRefreshStrategy,
+  );
 
   Future open() async {
     db = await openDatabase(
@@ -80,7 +87,9 @@ class FirebaseImageCacheManager {
       FirebaseImageObject returnObject =
           new FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
-      checkForUpdate(returnObject, image); // Check for update in background
+      if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
+        checkForUpdate(returnObject, image); // Check for update in background
+      }
       return returnObject;
     }
     return null;
@@ -132,7 +141,9 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes) async {
-    object.version = (await object.reference.getMetadata()).updatedTimeMillis;
+    if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
+      object.version = (await object.reference.getMetadata()).updatedTimeMillis;
+    }
     Uint8List bytes = await remoteFileBytes(object, maxSizeBytes);
     await putFile(object, bytes);
     return bytes;

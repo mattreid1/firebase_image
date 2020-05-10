@@ -16,11 +16,11 @@ See the below for example code.
 ## How does it work?
 The code downloads the image (object) into memory as a byte array.
 
-It gets the object's last update time from metadata (a millisecond precision integer timstamp) and uses that as a defacto version number. Therefore, any update to that remote object will result in the new version being downloaded.
+Unless disabled using the `cacheRefreshStrategy: CacheRefreshStrategy.NEVER` option, it gets the object's last update time from metadata (a millisecond precision integer timstamp) and uses that as a defacto version number. Therefore, any update to that remote object will result in the new version being downloaded.
 
 The image byte array in memory then gets saved to a file in the temporary directory of the app and that location is saved in a persistant database. The OS can clean up this directory at any time however.
 
-Metadata retrival is a 'Class B Operation' and has 50,000 free operations per month. After that, it is billed at $0.04 / 100,000 operations. This makes this implementation a cost effective stratergy for caching as the entire object doesn't have to be transfered just to check if there have been any updates. Essentailly, any images will only need to be downloaded once per device.
+Metadata retrival is a 'Class B Operation' and has 50,000 free operations per month. After that, it is billed at $0.04 / 100,000 operations and so the default behaviour of `cacheRefreshStrategy: CacheRefreshStrategy.BY_METADATA_DATE` may incur extra cost if the object never changes. This makes this implementation a cost effective stratergy for caching as the entire object doesn't have to be transfered just to check if there have been any updates. Essentailly, any images will only need to be downloaded once per device.
 
 ## Example
 ```dart
@@ -36,10 +36,10 @@ class IconImage extends StatelessWidget {
       ),
       body: Image(
         image: FirebaseImage('gs://bucket123/userIcon123.jpg'),
-		// Works with standard parameters, e.g.
-		fit: BoxFit.fitWidth,
-        width: 100,
-		// ... etc.
+        // Works with standard parameters, e.g.
+        fit: BoxFit.fitWidth,
+            width: 100,
+        // ... etc.
       ),
     );
   }
