@@ -19,7 +19,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   final int maxSizeBytes;
 
-  /// Default: BY_METADATA_DATE. Specifies the strategy in which to check if our cached version should be refreshed.
+  /// Default: BY_METADATA_DATE. Specifies the strategy in which to check if the cached version should be refreshed (optional)
   final CacheRefreshStrategy cacheRefreshStrategy;
 
   /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
@@ -34,6 +34,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [shouldCache] Default: True. Specified whether or not an image should be cached (optional)
   /// [scale] Default: 1.0. The scale to display the image at (optional)
   /// [maxSizeBytes] Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
+  /// [cacheRefreshStrategy] Default: BY_METADATA_DATE. Specifies the strategy in which to check if the cached version should be refreshed (optional)
   /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   FirebaseImage(
     String location, {

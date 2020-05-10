@@ -1,3 +1,6 @@
+## [0.1.6] - 10/05/2020
+* Added ability to disable metadata (class B operations) requests for images (e.g. for images that will never change).
+
 ## [0.1.5] - 26/12/2019
 * Fixes/image provider compilation issue from [Druchinin/fixes/imageProviderCompilationIssue.](https://github.com/mattreid1/firebase_image/pull/3)
 

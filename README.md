@@ -38,7 +38,7 @@ class IconImage extends StatelessWidget {
         image: FirebaseImage('gs://bucket123/userIcon123.jpg'),
         // Works with standard parameters, e.g.
         fit: BoxFit.fitWidth,
-            width: 100,
+        width: 100,
         // ... etc.
       ),
     );
