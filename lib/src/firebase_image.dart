@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/cache_manager.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,8 +19,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   final int maxSizeBytes;
 
-  /// Default: True. Specifies whether or not we should check object metadata to determine if we should refresh the cached image.
-  final bool shouldRefresh;
+  /// Default: BY_METADATA_DATE. Specifies the strategy in which to check if our cached version should be refreshed.
+  final CacheRefreshStrategy cacheRefreshStrategy;
 
   /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   final FirebaseApp firebaseApp;
@@ -39,7 +40,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.shouldCache = true,
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
-    this.shouldRefresh = true,
+    this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
     FirebaseApp firebaseApp,
   })  : this.firebaseApp = firebaseApp,
         _imageObject = FirebaseImageObject(
@@ -73,7 +74,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   Future<Uint8List> _fetchImage() async {
     Uint8List bytes;
     FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager(
-      shouldRefresh,
+      cacheRefreshStrategy,
     );
 
     if (shouldCache) {
