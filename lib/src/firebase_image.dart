@@ -26,7 +26,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   final FirebaseApp firebaseApp;
 
   /// The model for the image object
-  FirebaseImageObject _imageObject;
+  final FirebaseImageObject _imageObject;
 
   /// Fetches, saves and returns an ImageProvider for any image in a readable Firebase Cloud Storeage bucket.
   ///
@@ -42,9 +42,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
-    FirebaseApp firebaseApp,
-  })  : this.firebaseApp = firebaseApp,
-        _imageObject = FirebaseImageObject(
+    this.firebaseApp,
+  }) : _imageObject = FirebaseImageObject(
           bucket: _getBucket(location),
           remotePath: _getImagePath(location),
           reference: _getImageRef(location, firebaseApp),
