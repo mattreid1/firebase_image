@@ -14,8 +14,8 @@ class FirebaseImageCacheManager {
   static const String key = 'firebase_image';
 
   Database db;
-  String dbName = '$key.db';
-  String table = 'images';
+  static const String dbName = '$key.db';
+  static const String table = 'images';
   String basePath;
 
   final CacheRefreshStrategy cacheRefreshStrategy;
