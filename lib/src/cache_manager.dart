@@ -24,7 +24,7 @@ class FirebaseImageCacheManager {
     this.cacheRefreshStrategy,
   );
 
-  Future open() async {
+  Future<void> open() async {
     db = await openDatabase(
       join(await getDatabasesPath(), dbName),
       onCreate: (Database db, int version) async {
@@ -67,9 +67,9 @@ class FirebaseImageCacheManager {
   }
 
   Future<bool> checkDatabaseForEntry(FirebaseImageObject object) async {
-    List<Map> maps = await db.query(
+    final List<Map<String, dynamic>> maps = await db.query(
       table,
-      columns: null,
+      columns: const ['uri'],
       where: 'uri = ?',
       whereArgs: [object.uri],
     );
@@ -77,15 +77,20 @@ class FirebaseImageCacheManager {
   }
 
   Future<FirebaseImageObject> get(String uri, FirebaseImage image) async {
-    List<Map> maps = await db.query(
+    final List<Map<String, dynamic>> maps = await db.query(
       table,
-      columns: null,
+      columns: const [
+        'remotePath',
+        'localPath',
+        'bucket',
+        'version',
+      ],
       where: 'uri = ?',
       whereArgs: [uri],
     );
     if (maps.length > 0) {
       FirebaseImageObject returnObject =
-          new FirebaseImageObject.fromMap(maps.first);
+          FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
         checkForUpdate(returnObject, image); // Check for update in background
@@ -129,7 +134,7 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List> localFileBytes(FirebaseImageObject object) async {
     if (await _fileExists(object)) {
-      return new File(object.localPath).readAsBytes();
+      return File(object.localPath).readAsBytes();
     }
     return null;
   }
@@ -154,9 +159,9 @@ class FirebaseImageCacheManager {
     String path = basePath + "/" + object.remotePath;
     path = path.replaceAll("//", "/");
     //print(join(basePath, object.remotePath)); Join isn't working?
-    await new File(path).create(recursive: true);
-    var file = await new File(path).writeAsBytes(bytes);
-    object.localPath = file.path;
+    final localFile = await File(path).create(recursive: true);
+    await localFile.writeAsBytes(bytes);
+    object.localPath = localFile.path;
     return await upsert(object);
   }
 
@@ -164,13 +169,13 @@ class FirebaseImageCacheManager {
     if (object?.localPath == null) {
       return false;
     }
-    return new File(join(object.localPath)).exists();
+    return File(object.localPath).exists();
   }
 
   Future<String> _createFilePath() async {
-    var directory = await getTemporaryDirectory();
+    final directory = await getTemporaryDirectory();
     return join(directory.path, key);
   }
 
-  Future<void> close() async => await db.close();
+  Future<void> close() => db.close();
 }
