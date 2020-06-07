@@ -74,7 +74,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
 
   Future<Uint8List> _fetchImage() async {
     Uint8List bytes;
-    FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager(
+    FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
       cacheRefreshStrategy,
     );
 
