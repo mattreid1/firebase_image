@@ -8,6 +8,7 @@ import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FirebaseImage extends ImageProvider<FirebaseImage> {
   // Default: True. Specified whether or not an image should be cached (optional)
@@ -78,24 +79,28 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       cacheRefreshStrategy,
     );
 
-    if (shouldCache) {
-      await cacheManager.open();
-      FirebaseImageObject localObject =
-          await cacheManager.get(_imageObject.uri, this);
+    try {
+      if (shouldCache) {
+        await cacheManager.open();
+        FirebaseImageObject localObject =
+        await cacheManager.get(_imageObject.uri, this);
 
-      if (localObject != null) {
-        bytes = await cacheManager.localFileBytes(localObject);
-        if (bytes == null) {
-          bytes = await cacheManager.upsertRemoteFileToCache(
-              _imageObject, this.maxSizeBytes);
-        }
+        if (localObject != null) {
+          bytes = await cacheManager.localFileBytes(localObject);
+          if (bytes == null) {
+            bytes = await cacheManager.upsertRemoteFileToCache(_imageObject, this.maxSizeBytes);
+          }
       } else {
-        bytes = await cacheManager.upsertRemoteFileToCache(
-            _imageObject, this.maxSizeBytes);
-      }
+          bytes = await cacheManager.upsertRemoteFileToCache(_imageObject, this.maxSizeBytes);
+        }
     } else {
-      bytes =
-          await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+        bytes = await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+      }
+    }
+    on Exception {
+      await cacheManager.open();
+      await cacheManager.delete(_imageObject.uri);
+      bytes = kTransparentImage;
     }
 
     return bytes;
