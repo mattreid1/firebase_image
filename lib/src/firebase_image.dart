@@ -111,6 +111,17 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
         .instantiateImageCodec(await _fetchImage());
   }
 
+  Future<bool> delete() async {
+    FirebaseImageCacheManager cacheManager = new FirebaseImageCacheManager(
+      cacheRefreshStrategy,
+    );
+
+    await cacheManager.open();
+    await cacheManager.delete(_imageObject.uri);
+
+    return super.evict();
+  }
+
   @override
   Future<FirebaseImage> obtainKey(ImageConfiguration configuration) {
     return SynchronousFuture<FirebaseImage>(this);
