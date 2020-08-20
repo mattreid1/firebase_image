@@ -135,8 +135,13 @@ class FirebaseImageCacheManager {
   }
 
   Future<Uint8List> remoteFileBytes(
-      FirebaseImageObject object, int maxSizeBytes) {
-    return object.reference.getData(maxSizeBytes);
+      FirebaseImageObject object, int maxSizeBytes) async {
+    Directory dir = await getApplicationSupportDirectory();
+    File file = File('${dir.path}/${object.remotePath}');
+    file.createSync(recursive: true);
+    StorageFileDownloadTask task = object.reference.writeToFile(file);
+    await task.future;
+    return file.readAsBytesSync();
   }
 
   Future<Uint8List> upsertRemoteFileToCache(
