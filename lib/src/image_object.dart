@@ -4,9 +4,9 @@ class FirebaseImageObject {
   int version;
   StorageReference reference;
   String localPath;
-  String remotePath;
-  String bucket;
-  String uri;
+  final String remotePath;
+  final String bucket;
+  final String uri;
 
   FirebaseImageObject({
     this.version = -1,
@@ -26,12 +26,13 @@ class FirebaseImageObject {
     };
   }
 
-  FirebaseImageObject.fromMap(Map<String, dynamic> map) {
-    this.version = map["version"] ?? -1;
-    this.reference = map["reference"] ?? null;
-    this.localPath = map["localPath"] ?? null;
-    this.remotePath = map["remotePath"] ?? null;
-    this.bucket = map["bucket"] ?? null;
-    this.uri = '${this.bucket}${this.remotePath}' ?? null;
+  factory FirebaseImageObject.fromMap(Map<String, dynamic> map) {
+    return FirebaseImageObject(
+      version: map["version"] ?? -1,
+      reference: map["reference"],
+      localPath: map["localPath"],
+      bucket: map["bucket"],
+      remotePath: map["remotePath"],
+    );
   }
 }
