@@ -1,3 +1,7 @@
+## [0.2.0] - 25/08/2020
+* Merged [PR #16](https://github.com/mattreid1/firebase_image/pull/16) for dependency upgrades.
+* Merged [PR #9](https://github.com/mattreid1/firebase_image/pull/9) for general code uppgrades.
+
 ## [0.1.6] - 10/05/2020
 * Added ability to disable metadata (class B operations) requests for images (e.g. for images that will never change).
 
