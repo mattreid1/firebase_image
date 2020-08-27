@@ -9,6 +9,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'image_fetch_strategy.dart';
+
 class FirebaseImage extends ImageProvider<FirebaseImage> {
   // Default: True. Specified whether or not an image should be cached (optional)
   final bool shouldCache;
@@ -28,6 +30,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// The model for the image object
   final FirebaseImageObject _imageObject;
 
+  /// Default: FETCH_TO_MEMORY. Specifies the strategy in which to fetch the image from Firebase (optional)
+  final ImageFetchStrategy imageFetchStrategy;
+
   /// Fetches, saves and returns an ImageProvider for any image in a readable Firebase Cloud Storeage bucket.
   ///
   /// [location] The URI of the image, in the bucket, to be displayed
@@ -43,6 +48,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
     this.firebaseApp,
+    this.imageFetchStrategy = ImageFetchStrategy.FETCH_TO_MEMORY,
   }) : _imageObject = FirebaseImageObject(
           bucket: _getBucket(location),
           remotePath: _getImagePath(location),
@@ -73,7 +79,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   Future<Uint8List> _fetchImage() async {
     Uint8List bytes;
     FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
-      cacheRefreshStrategy,
+      cacheRefreshStrategy: cacheRefreshStrategy,
+      imageFetchStrategy: imageFetchStrategy,
     );
 
     if (shouldCache) {
