@@ -151,8 +151,8 @@ class FirebaseImageCacheManager {
     Directory dir = await getApplicationSupportDirectory();
     File file = File('${dir.path}/${object.remotePath}');
     file.createSync(recursive: true);
-    StorageFileDownloadTask task = object.reference.writeToFile(file);
-    await task.future;
+    DownloadTask task = object.reference.writeToFile(file);
+    await task;
     return file.readAsBytesSync();
   }
 
