@@ -2,7 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseImageObject {
   int version;
-  StorageReference reference;
+  Reference reference;
   String localPath;
   final String remotePath;
   final String bucket;
