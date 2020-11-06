@@ -1,3 +1,8 @@
+## [0.3.0] - 06/11/2020
+* Merged [PR #20](https://github.com/mattreid1/firebase_image/pull/20) to work with Firebase Storage 5.0.0
+* sqflite dependency change
+* Minor formatting updates
+
 ## [0.2.0] - 25/08/2020
 * Merged [PR #16](https://github.com/mattreid1/firebase_image/pull/16) for dependency upgrades.
 * Merged [PR #9](https://github.com/mattreid1/firebase_image/pull/9) for general code uppgrades.
@@ -28,6 +33,5 @@
 * Formatted code.
 
 ## [0.0.1] - 22/09/2019
-
 * Can download, save and render images from Firebase Cloud Storage.
 * Basic caching system works but no object expiration time or read monitoring as of yet.
