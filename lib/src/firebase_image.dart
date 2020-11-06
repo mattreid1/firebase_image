@@ -64,10 +64,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return uri.path;
   }
 
-  static StorageReference _getImageRef(
-      String location, FirebaseApp firebaseApp) {
-    FirebaseStorage storage =
-        FirebaseStorage(app: firebaseApp, storageBucket: _getBucket(location));
+  static Reference _getImageRef(String location, FirebaseApp firebaseApp) {
+    FirebaseStorage storage = FirebaseStorage.instanceFor(
+        app: firebaseApp, bucket: _getBucket(location));
     return storage.ref().child(_getImagePath(location));
   }
 
