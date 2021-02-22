@@ -9,6 +9,13 @@ Future<void> precacheFirebaseImage(String location,
     CacheRefreshStrategy cacheRefreshStrategy =
         CacheRefreshStrategy.BY_METADATA_DATE}) async {
   assert(location != null);
-  final image = FirebaseImage(location, firebaseApp: firebaseApp);
+
+  final image = FirebaseImage(
+    location,
+    firebaseApp: firebaseApp,
+    maxSizeBytes: maxSizeBytes,
+    cacheRefreshStrategy: cacheRefreshStrategy,
+  );
+
   await image.precache();
 }
