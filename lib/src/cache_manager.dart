@@ -154,6 +154,15 @@ class FirebaseImageCacheManager {
     return bytes;
   }
 
+  Future<void> precache(String location,
+      {FirebaseApp firebaseApp,
+      int maxSizeBytes = 2500 * 1000,
+      CacheRefreshStrategy cacheRefreshStrategy =
+          CacheRefreshStrategy.BY_METADATA_DATE}) async {
+    final image = FirebaseImage(location, firebaseApp: firebaseApp);
+    await image.precache();
+  }
+
   Future<FirebaseImageObject> putFile(
       FirebaseImageObject object, final bytes) async {
     String path = basePath + "/" + object.remotePath;
