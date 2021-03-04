@@ -78,7 +78,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
 
     if (shouldCache) {
       await cacheManager.open();
-      FirebaseImageObject localObject =
+      FirebaseImageObject? localObject =
           await cacheManager.get(_imageObject.uri, this);
 
       if (localObject != null) {
