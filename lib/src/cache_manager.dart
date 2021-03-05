@@ -44,7 +44,7 @@ class FirebaseImageCacheManager {
   }
 
   Future<FirebaseImageObject> insert(FirebaseImageObject model) async {
-    await db.insert('images', model.toMap());
+    await db.insert(table, model.toMap());
     return model;
   }
 
