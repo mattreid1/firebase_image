@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,10 +14,10 @@ import 'package:path/path.dart';
 class FirebaseImageCacheManager {
   static const String key = 'firebase_image';
 
-  Database db;
+  Database? db;
   static const String dbName = '$key.db';
   static const String table = 'images';
-  String basePath;
+  String basePath = '';
 
   final CacheRefreshStrategy cacheRefreshStrategy;
 
@@ -25,8 +26,9 @@ class FirebaseImageCacheManager {
   );
 
   Future<void> open() async {
+    var dbPath = (await getDatabasesPath())!;
     db = await openDatabase(
-      join(await getDatabasesPath(), dbName),
+      join(dbPath, dbName),
       onCreate: (Database db, int version) async {
         await db.execute('''
           CREATE TABLE $table (
@@ -44,12 +46,12 @@ class FirebaseImageCacheManager {
   }
 
   Future<FirebaseImageObject> insert(FirebaseImageObject model) async {
-    await db.insert('images', model.toMap());
+    await db!.insert('images', model.toMap());
     return model;
   }
 
   Future<FirebaseImageObject> update(FirebaseImageObject model) async {
-    await db.update(
+    await db!.update(
       table,
       model.toMap(),
       where: 'uri = ?',
@@ -67,7 +69,7 @@ class FirebaseImageCacheManager {
   }
 
   Future<bool> checkDatabaseForEntry(FirebaseImageObject object) async {
-    final List<Map<String, dynamic>> maps = await db.query(
+    final List<Map<String, dynamic>> maps = await db!.query(
       table,
       columns: const ['uri'],
       where: 'uri = ?',
@@ -76,8 +78,8 @@ class FirebaseImageCacheManager {
     return maps.length > 0;
   }
 
-  Future<FirebaseImageObject> get(String uri, FirebaseImage image) async {
-    final List<Map<String, dynamic>> maps = await db.query(
+  Future<FirebaseImageObject?> get(String uri, FirebaseImage image) async {
+    final List<Map<String, dynamic>> maps = await db!.query(
       table,
       columns: const [
         'remotePath',
@@ -109,7 +111,7 @@ class FirebaseImageCacheManager {
   Future<void> checkForUpdate(
       FirebaseImageObject object, FirebaseImage image) async {
     int remoteVersion =
-        (await object.reference.getMetadata()).updated.millisecondsSinceEpoch;
+        (await object.reference.getMetadata()).updated!.millisecondsSinceEpoch;
     if (remoteVersion != object.version) {
       // If true, download new image for next load
       await this.upsertRemoteFileToCache(object, image.maxSizeBytes);
@@ -117,28 +119,28 @@ class FirebaseImageCacheManager {
   }
 
   Future<List<FirebaseImageObject>> getAll() async {
-    final List<Map<String, dynamic>> maps = await db.query(table);
+    final List<Map<String, dynamic>> maps = await db!.query(table);
     return List.generate(maps.length, (i) {
       return FirebaseImageObject.fromMap(maps[i]);
     });
   }
 
   Future<int> delete(String uri) async {
-    return await db.delete(
+    return await db!.delete(
       table,
       where: 'uri = ?',
       whereArgs: [uri],
     );
   }
 
-  Future<Uint8List> localFileBytes(FirebaseImageObject object) async {
+  Future<Uint8List?> localFileBytes(FirebaseImageObject object) async {
     if (await _fileExists(object)) {
       return File(object.localPath).readAsBytes();
     }
     return null;
   }
 
-  Future<Uint8List> remoteFileBytes(
+  Future<Uint8List?> remoteFileBytes(
       FirebaseImageObject object, int maxSizeBytes) {
     return object.reference.getData(maxSizeBytes);
   }
@@ -147,9 +149,9 @@ class FirebaseImageCacheManager {
       FirebaseImageObject object, int maxSizeBytes) async {
     if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
       object.version =
-          (await object.reference.getMetadata()).updated.millisecondsSinceEpoch;
+          (await object.reference.getMetadata()).updated!.millisecondsSinceEpoch;
     }
-    Uint8List bytes = await remoteFileBytes(object, maxSizeBytes);
+    Uint8List bytes = (await remoteFileBytes(object, maxSizeBytes))!;
     await putFile(object, bytes);
     return bytes;
   }
@@ -166,9 +168,6 @@ class FirebaseImageCacheManager {
   }
 
   Future<bool> _fileExists(FirebaseImageObject object) async {
-    if (object?.localPath == null) {
-      return false;
-    }
     return File(object.localPath).exists();
   }
 
@@ -177,5 +176,5 @@ class FirebaseImageCacheManager {
     return join(directory.path, key);
   }
 
-  Future<void> close() => db.close();
+  Future<void> close() => db!.close();
 }

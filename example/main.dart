@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_image/firebase_image.dart';
 
@@ -17,13 +18,15 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({ Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
+
+
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
@@ -42,7 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
           'gs://bucket123/userIcon123.jpg',
           shouldCache: true, // The image should be cached (default: True)
           maxSizeBytes: 3000 * 1000, // 3MB max file size (default: 2.5MB)
-          cacheRefreshStrategy: CacheRefreshStrategy.NEVER // Switch off update checking
+          cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+          firebaseApp: Firebase.app(),
         ),
         width: 100,
       ),

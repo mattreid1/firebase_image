@@ -35,18 +35,19 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [scale] Default: 1.0. The scale to display the image at (optional)
   /// [maxSizeBytes] Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   /// [cacheRefreshStrategy] Default: BY_METADATA_DATE. Specifies the strategy in which to check if the cached version should be refreshed (optional)
-  /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
+  /// [firebaseApp] Specifies a custom Firebase app to make the request to the bucket from (required)
   FirebaseImage(
     String location, {
     this.shouldCache = true,
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
-    this.firebaseApp,
+    required this.firebaseApp,
   }) : _imageObject = FirebaseImageObject(
           bucket: _getBucket(location),
           remotePath: _getImagePath(location),
           reference: _getImageRef(location, firebaseApp),
+          localPath: '',
         );
 
   /// Returns the image as bytes
@@ -71,14 +72,14 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   Future<Uint8List> _fetchImage() async {
-    Uint8List bytes;
+    Uint8List? bytes;
     FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
       cacheRefreshStrategy,
     );
 
     if (shouldCache) {
       await cacheManager.open();
-      FirebaseImageObject localObject =
+      FirebaseImageObject? localObject =
           await cacheManager.get(_imageObject.uri, this);
 
       if (localObject != null) {
@@ -96,11 +97,11 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
     }
 
-    return bytes;
+    return bytes!;
   }
 
   Future<Codec> _fetchImageCodec() async {
-    return await PaintingBinding.instance
+    return await PaintingBinding.instance!
         .instantiateImageCodec(await _fetchImage());
   }
 
