@@ -10,10 +10,10 @@ class FirebaseImageObject {
 
   FirebaseImageObject({
     this.version = -1,
-    this.reference,
-    this.localPath,
-    this.bucket,
-    this.remotePath,
+    required this.reference,
+    required this.localPath,
+    required this.bucket,
+    required this.remotePath,
   }) : uri = '$bucket$remotePath';
 
   Map<String, dynamic> toMap() {
