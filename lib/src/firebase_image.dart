@@ -23,7 +23,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   final CacheRefreshStrategy cacheRefreshStrategy;
 
   /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
-  final FirebaseApp firebaseApp;
+  final FirebaseApp? firebaseApp;
 
   /// The model for the image object
   final FirebaseImageObject _imageObject;
@@ -64,14 +64,14 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return uri.path;
   }
 
-  static Reference _getImageRef(String location, FirebaseApp firebaseApp) {
+  static Reference _getImageRef(String location, FirebaseApp? firebaseApp) {
     FirebaseStorage storage = FirebaseStorage.instanceFor(
         app: firebaseApp, bucket: _getBucket(location));
     return storage.ref().child(_getImagePath(location));
   }
 
   Future<Uint8List> _fetchImage() async {
-    Uint8List bytes;
+    Uint8List? bytes;
     FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
       cacheRefreshStrategy,
     );
@@ -96,12 +96,12 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
     }
 
-    return bytes;
+    return bytes!;
   }
 
   Future<Codec> _fetchImageCodec() async {
     return await PaintingBinding.instance
-        .instantiateImageCodec(await _fetchImage());
+        !.instantiateImageCodec(await _fetchImage());
   }
 
   @override

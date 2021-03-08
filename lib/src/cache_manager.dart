@@ -100,7 +100,7 @@ class FirebaseImageCacheManager {
     return null;
   }
 
-  Reference getImageRef(FirebaseImageObject object, FirebaseApp firebaseApp) {
+  Reference getImageRef(FirebaseImageObject object, FirebaseApp? firebaseApp) {
     FirebaseStorage storage =
     FirebaseStorage.instanceFor(app: firebaseApp, bucket: object.bucket);
     return storage.ref().child(object.remotePath);
@@ -133,7 +133,7 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List?> localFileBytes(FirebaseImageObject? object) async {
     if (await _fileExists(object)) {
-      return File(object!.localPath).readAsBytes();
+      return File(object!.localPath!).readAsBytes();
     }
     return null;
   }
@@ -169,7 +169,7 @@ class FirebaseImageCacheManager {
     if (object?.localPath == null) {
       return false;
     }
-    return File(object!.localPath).exists();
+    return File(object!.localPath!).exists();
   }
 
   Future<String> _createFilePath() async {
