@@ -3,17 +3,17 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseImageObject {
   int version;
   Reference reference;
-  String localPath;
+  String? localPath;
   final String remotePath;
   final String bucket;
   final String uri;
 
   FirebaseImageObject({
     this.version = -1,
-    this.reference,
+    required this.reference,
     this.localPath,
-    this.bucket,
-    this.remotePath,
+    required this.bucket,
+    required this.remotePath,
   }) : uri = '$bucket$remotePath';
 
   Map<String, dynamic> toMap() {
