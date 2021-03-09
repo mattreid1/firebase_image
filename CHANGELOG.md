@@ -1,3 +1,10 @@
+## [1.0.0] - 09/03/2021
+* 1.0.0 release! 🥳
+* Uses Firebase Storage ^8.0.0 and Firebase Core ^1.0.0
+* Merged [PR #30](https://github.com/mattreid1/firebase_image/pull/30) to update dependancies and add null saftey
+* Merged [PR #28](https://github.com/mattreid1/firebase_image/pull/28) for code style correction
+* Merged [PR #24](https://github.com/mattreid1/firebase_image/pull/24) to update dependancies
+
 ## [0.3.0] - 06/11/2020
 * Merged [PR #20](https://github.com/mattreid1/firebase_image/pull/20) to work with Firebase Storage 5.0.0
 * sqflite dependency change

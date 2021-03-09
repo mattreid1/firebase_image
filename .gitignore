@@ -9,6 +9,9 @@
 .history
 .svn/
 
+# Ignoring as this is a library (see https://github.com/toptal/gitignore/blob/2d8160c7f607e142929d2ba213620a638e50603f/templates/Flutter.gitignore#L16)
+pubspec.lock
+
 # IntelliJ related
 *.iml
 *.ipr
