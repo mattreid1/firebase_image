@@ -54,6 +54,12 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return _fetchImage();
   }
 
+  /// Pre-caches an image
+  Future<void> preCache() async {
+    if (shouldCache == false) throw "Caching must be enabled to pre-cache an image.";
+    await _fetchImage();
+  }
+
   static String _getBucket(String location) {
     final uri = Uri.parse(location);
     return '${uri.scheme}://${uri.authority}';
