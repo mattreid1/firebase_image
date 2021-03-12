@@ -1,3 +1,6 @@
+## [1.0.1] 12/03/2021
+* Formatted code according to `dartfmt`
+
 ## [1.0.0] - 09/03/2021
 * 1.0.0 release! 🥳
 * Uses Firebase Storage ^8.0.0 and Firebase Core ^1.0.0
