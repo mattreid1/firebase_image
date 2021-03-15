@@ -22,6 +22,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// Default: BY_METADATA_DATE. Specifies the strategy in which to check if the cached version should be refreshed (optional)
   final CacheRefreshStrategy cacheRefreshStrategy;
 
+  /// Defines in which cycle the meta data will be checked (optional)
+  final Duration? metaDataRefreshCycle;
+
   /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   final FirebaseApp? firebaseApp;
 
@@ -35,6 +38,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [scale] Default: 1.0. The scale to display the image at (optional)
   /// [maxSizeBytes] Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   /// [cacheRefreshStrategy] Default: BY_METADATA_DATE. Specifies the strategy in which to check if the cached version should be refreshed (optional)
+  /// [metaDataRefreshCycle] Defines in which cycle the meta data will be checked (optional)
   /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   FirebaseImage(
     String location, {
@@ -42,6 +46,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
+    this.metaDataRefreshCycle,
     this.firebaseApp,
   }) : _imageObject = FirebaseImageObject(
           bucket: _getBucket(location),
@@ -74,6 +79,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     Uint8List? bytes;
     FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
       cacheRefreshStrategy,
+      metaDataRefreshCycle
     );
 
     if (shouldCache) {

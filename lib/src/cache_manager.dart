@@ -19,9 +19,11 @@ class FirebaseImageCacheManager {
   late String basePath;
 
   final CacheRefreshStrategy cacheRefreshStrategy;
+  final Duration? metaDataRefreshCycle;
 
   FirebaseImageCacheManager(
     this.cacheRefreshStrategy,
+    this.metaDataRefreshCycle
   );
 
   Future<void> open() async {
@@ -34,11 +36,12 @@ class FirebaseImageCacheManager {
             remotePath TEXT, 
             localPath TEXT, 
             bucket TEXT, 
-            version INTEGER
+            version INTEGER,
+            lastMetaDataCheck INTEGER
           )
         ''');
       },
-      version: 1,
+      version: 2,
     );
     basePath = await _createFilePath();
   }
@@ -93,7 +96,15 @@ class FirebaseImageCacheManager {
           FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
-        checkForUpdate(returnObject, image); // Check for update in background
+        if(this.metaDataRefreshCycle != null){ //If metaDataRefreshCycle null always checkForUpdate
+          DateTime lastMetaDataCheck = DateTime.fromMillisecondsSinceEpoch(returnObject.lastMetaDataCheck);
+          lastMetaDataCheck.add(this.metaDataRefreshCycle!); // Add duration to lastMetaDataCheck
+          if(DateTime.now().isAfter(lastMetaDataCheck)){
+            checkForUpdate(returnObject, image); // Check for update in background
+          }
+        }else{
+          checkForUpdate(returnObject, image); // Check for update in background
+        }
       }
       return returnObject;
     }
@@ -152,6 +163,8 @@ class FirebaseImageCacheManager {
               .updated
               ?.millisecondsSinceEpoch ??
           0;
+
+      object.lastMetaDataCheck = DateTime.now().millisecondsSinceEpoch;
     }
     Uint8List? bytes = await remoteFileBytes(object, maxSizeBytes);
     await putFile(object, bytes);
