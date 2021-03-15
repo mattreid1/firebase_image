@@ -97,7 +97,7 @@ class FirebaseImageCacheManager {
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
         if(this.metaDataRefreshCycle != null){ //If metaDataRefreshCycle null always checkForUpdate
-          DateTime lastMetaDataCheck = DateTime.fromMicrosecondsSinceEpoch(returnObject.lastMetaDataCheck);
+          DateTime lastMetaDataCheck = DateTime.fromMillisecondsSinceEpoch(returnObject.lastMetaDataCheck);
           lastMetaDataCheck.add(this.metaDataRefreshCycle!); // Add duration to lastMetaDataCheck
           if(DateTime.now().isAfter(lastMetaDataCheck)){
             checkForUpdate(returnObject, image); // Check for update in background
