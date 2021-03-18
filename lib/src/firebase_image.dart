@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
-import 'package:firebase_image/src/cache_manager.dart';
+import 'package:firebase_image/src/cache_manager/universal.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -79,10 +79,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     if (shouldCache) {
       await cacheManager.open();
       FirebaseImageObject? localObject =
-          await cacheManager.get(_imageObject.uri, this);
+          await cacheManager.getObject(_imageObject.uri, this);
 
       if (localObject != null) {
-        bytes = await cacheManager.localFileBytes(localObject);
+        bytes = await cacheManager.getLocalFileBytes(localObject);
         if (bytes == null) {
           bytes = await cacheManager.upsertRemoteFileToCache(
               _imageObject, this.maxSizeBytes);
@@ -92,8 +92,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
             _imageObject, this.maxSizeBytes);
       }
     } else {
-      bytes =
-          await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+      bytes = await cacheManager.getRemoteFileBytes(
+          _imageObject, this.maxSizeBytes);
     }
 
     return bytes!;
