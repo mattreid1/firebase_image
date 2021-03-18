@@ -16,17 +16,27 @@ abstract class AbstractFirebaseImageCacheManager {
   Future<void> close() async {}
 
   Future<FirebaseImageObject?> getObject(
-      String uri, FirebaseImage image) async {}
+      String uri, FirebaseImage image) async {
+    throw UnimplementedError();
+  }
 
-  Future<Uint8List?> getLocalFileBytes(FirebaseImageObject? object) async {}
+  Future<List<FirebaseImageObject>> getAllObjects() async {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getLocalFileBytes(FirebaseImageObject? object) async {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> upsertRemoteFileToCache(
+      FirebaseImageObject object, int maxSizeBytes) async {
+    throw UnimplementedError();
+  }
 
   Future<Uint8List?> getRemoteFileBytes(
       FirebaseImageObject object, int maxSizeBytes) {
     return object.reference.getData(maxSizeBytes);
   }
-
-  Future<Uint8List?> upsertRemoteFileToCache(
-      FirebaseImageObject object, int maxSizeBytes) async {}
 
   Future<int> getRemoteVersion(
       FirebaseImageObject object, int defaultValue) async {

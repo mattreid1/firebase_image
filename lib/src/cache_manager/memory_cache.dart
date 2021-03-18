@@ -38,6 +38,12 @@ class FirebaseImageCacheManager extends AbstractFirebaseImageCacheManager {
     }
   }
 
+  Future<List<FirebaseImageObject>> getAllObjects() async {
+    final List<FirebaseImageObject> objects = [];
+    memoryCache.forEach((k, v) => objects.add(v.object));
+    return objects;
+  }
+
   Future<Uint8List?> getLocalFileBytes(FirebaseImageObject? object) async {
     final cacheEntry = memoryCache[object?.uri];
     return cacheEntry?.bytes;

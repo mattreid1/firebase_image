@@ -69,6 +69,13 @@ class FirebaseImageCacheManager extends AbstractFirebaseImageCacheManager {
     return null;
   }
 
+  Future<List<FirebaseImageObject>> getAllObjects() async {
+    final List<Map<String, dynamic>> maps = await db.query(table);
+    return List.generate(maps.length, (i) {
+      return FirebaseImageObject.fromMap(maps[i]);
+    });
+  }
+
   Future<Uint8List?> getLocalFileBytes(FirebaseImageObject? object) async {
     if (await _fileExists(object)) {
       return File(object!.localPath!).readAsBytes();
