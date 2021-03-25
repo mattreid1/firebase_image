@@ -135,8 +135,10 @@ class FirebaseImageCacheManager {
   }
 
   Future<Uint8List?> localFileBytes(FirebaseImageObject? object) async {
-    if (await _fileExists(object)) {
-      return File(object!.localPath!).readAsBytes();
+    final localPath = object?.localPath;
+    if (localPath == null) return null;
+    if (await _fileExists(localPath)) {
+      return File(localPath).readAsBytes();
     }
     return null;
   }
@@ -175,11 +177,8 @@ class FirebaseImageCacheManager {
     return await upsert(object);
   }
 
-  Future<bool> _fileExists(FirebaseImageObject? object) async {
-    if (object?.localPath == null) {
-      return false;
-    }
-    return File(object!.localPath!).exists();
+  Future<bool> _fileExists(String localPath) async {
+    return File(localPath).exists();
   }
 
   Future<String> _createFilePath() async {
