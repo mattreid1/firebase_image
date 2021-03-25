@@ -65,35 +65,29 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   static Reference _getImageRef(String location, FirebaseApp? firebaseApp) {
-    FirebaseStorage storage = FirebaseStorage.instanceFor(
+    final storage = FirebaseStorage.instanceFor(
         app: firebaseApp, bucket: _getBucket(location));
     return storage.ref().child(_getImagePath(location));
   }
 
   Future<Uint8List> _fetchImage() async {
     Uint8List? bytes;
-    FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
-      cacheRefreshStrategy,
-    );
+    final cacheManager = FirebaseImageCacheManager(cacheRefreshStrategy);
 
     if (shouldCache) {
       await cacheManager.open();
-      FirebaseImageObject? localObject =
-          await cacheManager.get(_imageObject.uri, this);
+      final localObject = await cacheManager.get(_imageObject.uri, this);
 
       if (localObject != null) {
         bytes = await cacheManager.localFileBytes(localObject);
-        if (bytes == null) {
-          bytes = await cacheManager.upsertRemoteFileToCache(
-              _imageObject, this.maxSizeBytes);
-        }
+        bytes ??= await cacheManager.upsertRemoteFileToCache(
+            _imageObject, maxSizeBytes);
       } else {
         bytes = await cacheManager.upsertRemoteFileToCache(
-            _imageObject, this.maxSizeBytes);
+            _imageObject, maxSizeBytes);
       }
     } else {
-      bytes =
-          await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+      bytes = await cacheManager.remoteFileBytes(_imageObject, maxSizeBytes);
     }
 
     return bytes!;
@@ -120,15 +114,14 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   @override
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) return false;
-    final FirebaseImage typedOther = other;
+    final typedOther = other as FirebaseImage;
     return _imageObject.uri == typedOther._imageObject.uri &&
-        this.scale == typedOther.scale;
+        scale == typedOther.scale;
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, this.scale);
+  int get hashCode => hashValues(_imageObject.uri, scale);
 
   @override
-  String toString() =>
-      '$runtimeType("${_imageObject.uri}", scale: ${this.scale})';
+  String toString() => '$runtimeType("${_imageObject.uri}", scale: $scale)';
 }

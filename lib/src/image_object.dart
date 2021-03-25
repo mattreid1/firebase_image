@@ -17,22 +17,22 @@ class FirebaseImageObject {
   }) : uri = '$bucket$remotePath';
 
   Map<String, dynamic> toMap() {
-    return {
-      'version': this.version,
-      'localPath': this.localPath,
-      'bucket': this.bucket,
-      'remotePath': this.remotePath,
-      'uri': this.uri,
+    return <String, dynamic>{
+      'version': version,
+      'localPath': localPath,
+      'bucket': bucket,
+      'remotePath': remotePath,
+      'uri': uri,
     };
   }
 
   factory FirebaseImageObject.fromMap(Map<String, dynamic> map) {
     return FirebaseImageObject(
-      version: map["version"] ?? -1,
-      reference: map["reference"],
-      localPath: map["localPath"],
-      bucket: map["bucket"],
-      remotePath: map["remotePath"],
+      version: map['version'] as int? ?? -1,
+      reference: map['reference'] as Reference,
+      localPath: map['localPath'] as String?,
+      bucket: map['bucket'] as String,
+      remotePath: map['remotePath'] as String,
     );
   }
 }
