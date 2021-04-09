@@ -16,6 +16,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// Default: 1.0. The scale to display the image at (optional)
   final double scale;
 
+  // Default null. What to return if no bytes are returned (example: wrong uri, image too large,...)
+  final Uint8List? defaultBytes;
+
   /// Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   final int maxSizeBytes;
 
@@ -33,6 +36,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [location] The URI of the image, in the bucket, to be displayed
   /// [shouldCache] Default: True. Specified whether or not an image should be cached (optional)
   /// [scale] Default: 1.0. The scale to display the image at (optional)
+  /// [defaultBytes] Default: null. The bytes to return if no image is fetched.
   /// [maxSizeBytes] Default: 2.5MB. The maximum size in bytes to be allocated in the device's memory for the image (optional)
   /// [cacheRefreshStrategy] Default: BY_METADATA_DATE. Specifies the strategy in which to check if the cached version should be refreshed (optional)
   /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
@@ -40,6 +44,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     String location, {
     this.shouldCache = true,
     this.scale = 1.0,
+    this.defaultBytes,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
     this.firebaseApp,
@@ -48,11 +53,6 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           remotePath: _getImagePath(location),
           reference: _getImageRef(location, firebaseApp),
         );
-
-  /// Returns the image as bytes
-  Future<Uint8List> getBytes() {
-    return _fetchImage();
-  }
 
   static String _getBucket(String location) {
     final uri = Uri.parse(location);
@@ -96,7 +96,11 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           _imageObject, this.maxSizeBytes);
     }
 
-    return bytes!;
+    if (bytes == null) {
+      return this.defaultBytes!;
+    }
+
+    return bytes;
   }
 
   Future<Codec> _fetchImageCodec() async {
