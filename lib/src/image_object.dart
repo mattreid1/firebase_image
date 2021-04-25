@@ -18,11 +18,11 @@ class FirebaseImageObject {
 
   Map<String, dynamic> toMap() {
     return {
-      'version': this.version,
-      'localPath': this.localPath,
-      'bucket': this.bucket,
-      'remotePath': this.remotePath,
-      'uri': this.uri,
+      'version': version,
+      'localPath': localPath,
+      'bucket': bucket,
+      'remotePath': remotePath,
+      'uri': uri,
     };
   }
 

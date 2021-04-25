@@ -2,13 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_image/firebase_image.dart';
-import 'package:firebase_image/src/firebase_image.dart';
-import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'cache_refresh_strategy.dart';
+import 'firebase_image.dart';
+import 'image_object.dart';
 
 class FirebaseImageCacheManager {
   static const String key = 'firebase_image';
@@ -26,8 +27,8 @@ class FirebaseImageCacheManager {
 
   Future<void> open() async {
     db = await openDatabase(
-      join((await getDatabasesPath())!, dbName),
-      onCreate: (Database db, int version) async {
+      join((await getDatabasesPath()), dbName),
+      onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE $table (
             uri TEXT PRIMARY KEY,
@@ -73,7 +74,7 @@ class FirebaseImageCacheManager {
       where: 'uri = ?',
       whereArgs: [object.uri],
     );
-    return maps.length > 0;
+    return maps.isNotEmpty;
   }
 
   Future<FirebaseImageObject?> get(String uri, FirebaseImage image) async {
@@ -88,11 +89,10 @@ class FirebaseImageCacheManager {
       where: 'uri = ?',
       whereArgs: [uri],
     );
-    if (maps.length > 0) {
-      FirebaseImageObject returnObject =
-          FirebaseImageObject.fromMap(maps.first);
+    if (maps.isNotEmpty) {
+      var returnObject = FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
-      if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
+      if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
         checkForUpdate(returnObject, image); // Check for update in background
       }
       return returnObject;
@@ -101,20 +101,20 @@ class FirebaseImageCacheManager {
   }
 
   Reference getImageRef(FirebaseImageObject object, FirebaseApp? firebaseApp) {
-    FirebaseStorage storage =
+    var storage =
         FirebaseStorage.instanceFor(app: firebaseApp, bucket: object.bucket);
     return storage.ref().child(object.remotePath);
   }
 
   Future<void> checkForUpdate(
       FirebaseImageObject object, FirebaseImage image) async {
-    int remoteVersion = (await object.reference.getMetadata())
+    var remoteVersion = (await object.reference.getMetadata())
             .updated
             ?.millisecondsSinceEpoch ??
         -1;
     if (remoteVersion != object.version) {
       // If true, download new image for next load
-      await this.upsertRemoteFileToCache(object, image.maxSizeBytes);
+      await upsertRemoteFileToCache(object, image.maxSizeBytes);
     }
   }
 
@@ -147,20 +147,28 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List?> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes) async {
-    if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
-      object.version = (await object.reference.getMetadata())
-              .updated
-              ?.millisecondsSinceEpoch ??
-          0;
+    try {
+      if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
+        object.version = (await object.reference
+                .getMetadata()
+                .timeout(Duration(milliseconds: 5000), onTimeout: () {
+          throw FirebaseException(
+              code: 'timeout', message: 'no internet', plugin: 'storage');
+        }))
+            .updated!
+            .millisecondsSinceEpoch;
+      }
+      var bytes = await remoteFileBytes(object, maxSizeBytes);
+      await putFile(object, bytes!);
+      return bytes;
+    } on FirebaseException catch (_) {
+      rethrow;
     }
-    Uint8List? bytes = await remoteFileBytes(object, maxSizeBytes);
-    await putFile(object, bytes);
-    return bytes;
   }
 
   Future<FirebaseImageObject> putFile(
-      FirebaseImageObject object, final bytes) async {
-    String path = basePath + "/" + object.remotePath;
+      FirebaseImageObject object, Uint8List bytes) async {
+    var path = "$basePath/${object.remotePath}";
     path = path.replaceAll("//", "/");
     //print(join(basePath, object.remotePath)); Join isn't working?
     final localFile = await File(path).create(recursive: true);
