@@ -108,7 +108,7 @@ class FirebaseImageCacheManager {
 
   Future<void> checkForUpdate(
       FirebaseImageObject object, FirebaseImage image) async {
-    var remoteVersion = (await object.reference.getMetadata())
+    var remoteVersion = (await object.reference!.getMetadata())
             .updated
             ?.millisecondsSinceEpoch ??
         -1;
@@ -142,14 +142,14 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List?> remoteFileBytes(
       FirebaseImageObject object, int maxSizeBytes) {
-    return object.reference.getData(maxSizeBytes);
+    return object.reference!.getData(maxSizeBytes);
   }
 
   Future<Uint8List?> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes) async {
     try {
       if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
-        object.version = (await object.reference
+        object.version = (await object.reference!
                 .getMetadata()
                 .timeout(Duration(milliseconds: 5000), onTimeout: () {
           throw FirebaseException(
