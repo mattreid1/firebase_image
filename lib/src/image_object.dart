@@ -10,7 +10,7 @@ class FirebaseImageObject {
 
   FirebaseImageObject({
     this.version = -1,
-    required this.reference,
+    this.reference,
     this.localPath,
     required this.bucket,
     required this.remotePath,
