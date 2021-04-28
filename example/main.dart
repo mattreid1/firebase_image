@@ -38,12 +38,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Image(
-        image: FirebaseImage(
-          'gs://bucket123/userIcon123.jpg',
-          shouldCache: true, // The image should be cached (default: True)
-          maxSizeBytes: 3000 * 1000, // 3MB max file size (default: 2.5MB)
-          cacheRefreshStrategy: CacheRefreshStrategy.NEVER // Switch off update checking
-        ),
+        image: FirebaseImage('gs://bucket123/userIcon123.jpg',
+            shouldCache: true, // The image should be cached (default: True)
+            maxSizeBytes: 3000 * 1000, // 3MB max file size (default: 2.5MB)
+            cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+            errorAssetImage:
+                'assets/some_image.png' // Switch off update checking
+            ),
         width: 100,
       ),
     );

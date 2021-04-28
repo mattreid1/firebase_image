@@ -2,13 +2,17 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_image/firebase_image.dart';
-import 'package:firebase_image/src/cache_manager.dart';
-import 'package:firebase_image/src/image_object.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import 'cache_manager.dart';
+import 'cache_refresh_strategy.dart';
+import 'image_object.dart';
+
+@immutable
 class FirebaseImage extends ImageProvider<FirebaseImage> {
   // Default: True. Specified whether or not an image should be cached (optional)
   final bool shouldCache;
@@ -25,6 +29,9 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   final FirebaseApp? firebaseApp;
 
+  /// Image to show when a trouble occur
+  final String errorAssetImage;
+
   /// The model for the image object
   final FirebaseImageObject _imageObject;
 
@@ -38,6 +45,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   FirebaseImage(
     String location, {
+    required this.errorAssetImage,
     this.shouldCache = true,
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
@@ -65,35 +73,37 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   static Reference _getImageRef(String location, FirebaseApp? firebaseApp) {
-    FirebaseStorage storage = FirebaseStorage.instanceFor(
+    var storage = FirebaseStorage.instanceFor(
         app: firebaseApp, bucket: _getBucket(location));
     return storage.ref().child(_getImagePath(location));
   }
 
   Future<Uint8List> _fetchImage() async {
     Uint8List? bytes;
-    FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
+    final cacheManager = FirebaseImageCacheManager(
       cacheRefreshStrategy,
     );
 
     if (shouldCache) {
       await cacheManager.open();
-      FirebaseImageObject? localObject =
-          await cacheManager.get(_imageObject.uri, this);
+      var localObject = await cacheManager.get(_imageObject.uri, this);
 
       if (localObject != null) {
         bytes = await cacheManager.localFileBytes(localObject);
         if (bytes == null) {
           bytes = await cacheManager.upsertRemoteFileToCache(
-              _imageObject, this.maxSizeBytes);
+              _imageObject, maxSizeBytes);
         }
       } else {
-        bytes = await cacheManager.upsertRemoteFileToCache(
-            _imageObject, this.maxSizeBytes);
+        try {
+          bytes = await cacheManager.upsertRemoteFileToCache(
+              _imageObject, maxSizeBytes);
+        } on FirebaseException catch (_) {
+          bytes = (await rootBundle.load(errorAssetImage)).buffer.asUint8List();
+        }
       }
     } else {
-      bytes =
-          await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+      bytes = await cacheManager.remoteFileBytes(_imageObject, maxSizeBytes);
     }
 
     return bytes!;
@@ -122,13 +132,12 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     if (other.runtimeType != runtimeType) return false;
     final FirebaseImage typedOther = other;
     return _imageObject.uri == typedOther._imageObject.uri &&
-        this.scale == typedOther.scale;
+        scale == typedOther.scale;
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, this.scale);
+  int get hashCode => hashValues(_imageObject.uri, scale);
 
   @override
-  String toString() =>
-      '$runtimeType("${_imageObject.uri}", scale: ${this.scale})';
+  String toString() => '$runtimeType("${_imageObject.uri}", scale: $scale)';
 }
