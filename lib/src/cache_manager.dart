@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:sqflite/sqflite.dart';
 
 class FirebaseImageCacheManager {
@@ -93,8 +94,11 @@ class FirebaseImageCacheManager {
       final returnObject = FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
-        await checkForUpdate(
-            returnObject, image); // Check for update in background
+        // Check for update in background
+        unawaited(checkForUpdate(
+          returnObject,
+          image,
+        ));
       }
       return returnObject;
     }
