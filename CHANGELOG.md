@@ -1,3 +1,9 @@
+## [1.0.1+1] 07/05/2021
+* Fixes [#37] "Operand of null-aware operation '!' has type 'String' which excludes null."
+* Switches to strong-mode which includes no implicit casts and no implicit-dynamics.
+* Removes several force unwraps (!) thus handling nullable values better
+* Reference is no longer a field on a map and is thus constructed beforehand using a path
+
 ## [1.0.1] 12/03/2021
 * Formatted code according to `dartfmt`
 

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseImageObject {
@@ -17,22 +18,43 @@ class FirebaseImageObject {
   }) : uri = '$bucket$remotePath';
 
   Map<String, dynamic> toMap() {
-    return {
-      'version': this.version,
-      'localPath': this.localPath,
-      'bucket': this.bucket,
-      'remotePath': this.remotePath,
-      'uri': this.uri,
+    return <String, dynamic>{
+      'version': version,
+      'localPath': localPath,
+      'bucket': bucket,
+      'remotePath': remotePath,
+      'uri': uri,
     };
   }
 
-  factory FirebaseImageObject.fromMap(Map<String, dynamic> map) {
-    return FirebaseImageObject(
-      version: map["version"] ?? -1,
-      reference: map["reference"],
-      localPath: map["localPath"],
-      bucket: map["bucket"],
-      remotePath: map["remotePath"],
+  factory FirebaseImageObject.fromMap(
+    Map<String, dynamic> map,
+    FirebaseApp? firebaseApp,
+  ) {
+    final remotePath = map['remotePath'] as String;
+    final bucket = map['bucket'] as String;
+    final reference = getImageRef(
+      bucket: bucket,
+      remotePath: remotePath,
+      firebaseApp: firebaseApp,
     );
+
+    return FirebaseImageObject(
+      reference: reference,
+      version: map['version'] as int? ?? -1,
+      localPath: map['localPath'] as String?,
+      bucket: bucket,
+      remotePath: remotePath,
+    );
+  }
+
+  static Reference getImageRef({
+    required String bucket,
+    required String remotePath,
+    FirebaseApp? firebaseApp,
+  }) {
+    final storage =
+        FirebaseStorage.instanceFor(app: firebaseApp, bucket: bucket);
+    return storage.ref().child(remotePath);
   }
 }
