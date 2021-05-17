@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -91,8 +89,8 @@ class FirebaseImageCacheManager {
       whereArgs: [uri],
     );
     if (maps.isNotEmpty) {
-      final returnObject = FirebaseImageObject.fromMap(maps.first);
-      returnObject.reference = getImageRef(returnObject, image.firebaseApp);
+      final returnObject =
+          FirebaseImageObject.fromMap(maps.first, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
         // Check for update in background
         unawaited(checkForUpdate(
@@ -103,12 +101,6 @@ class FirebaseImageCacheManager {
       return returnObject;
     }
     return null;
-  }
-
-  Reference getImageRef(FirebaseImageObject object, FirebaseApp? firebaseApp) {
-    final storage =
-        FirebaseStorage.instanceFor(app: firebaseApp, bucket: object.bucket);
-    return storage.ref().child(object.remotePath);
   }
 
   Future<void> checkForUpdate(
@@ -123,10 +115,10 @@ class FirebaseImageCacheManager {
     }
   }
 
-  Future<List<FirebaseImageObject>> getAll() async {
+  Future<List<FirebaseImageObject>> getAll(FirebaseImage image) async {
     final List<Map<String, dynamic>> maps = await db.query(table);
     return List.generate(maps.length, (i) {
-      return FirebaseImageObject.fromMap(maps[i]);
+      return FirebaseImageObject.fromMap(maps[i], image.firebaseApp);
     });
   }
 
