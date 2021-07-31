@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/cache_manager.dart';
 import 'package:firebase_image/src/image_object.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -64,10 +64,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return uri.path;
   }
 
-  static StorageReference _getImageRef(
+  static firebase_storage.Reference _getImageRef(
       String location, FirebaseApp firebaseApp) {
-    FirebaseStorage storage =
-        FirebaseStorage(app: firebaseApp, storageBucket: _getBucket(location));
+    firebase_storage.FirebaseStorage storage =
+    firebase_storage.FirebaseStorage.instanceFor(app: firebaseApp, bucket: _getBucket(location));
     return storage.ref().child(_getImagePath(location));
   }
 

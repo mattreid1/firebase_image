@@ -5,7 +5,7 @@ import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -89,8 +89,7 @@ class FirebaseImageCacheManager {
       whereArgs: [uri],
     );
     if (maps.length > 0) {
-      FirebaseImageObject returnObject =
-          FirebaseImageObject.fromMap(maps.first);
+      FirebaseImageObject returnObject = FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
         checkForUpdate(returnObject, image); // Check for update in background
@@ -100,17 +99,15 @@ class FirebaseImageCacheManager {
     return null;
   }
 
-  StorageReference getImageRef(
-      FirebaseImageObject object, FirebaseApp firebaseApp) {
-    FirebaseStorage storage =
-        FirebaseStorage(app: firebaseApp, storageBucket: object.bucket);
+  firebase_storage.Reference getImageRef(FirebaseImageObject object, FirebaseApp firebaseApp) {
+    firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instanceFor(app: firebaseApp, bucket: object.bucket);
     return storage.ref().child(object.remotePath);
   }
 
   Future<void> checkForUpdate(
       FirebaseImageObject object, FirebaseImage image) async {
     int remoteVersion =
-        (await object.reference.getMetadata()).updatedTimeMillis;
+        (await object.reference.getMetadata()).updated.millisecond;
     if (remoteVersion != object.version) {
       // If true, download new image for next load
       await this.upsertRemoteFileToCache(object, image.maxSizeBytes);
@@ -147,7 +144,7 @@ class FirebaseImageCacheManager {
   Future<Uint8List> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes) async {
     if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
-      object.version = (await object.reference.getMetadata()).updatedTimeMillis;
+      object.version = (await object.reference.getMetadata()).updated.millisecond;
     }
     Uint8List bytes = await remoteFileBytes(object, maxSizeBytes);
     await putFile(object, bytes);
