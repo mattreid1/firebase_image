@@ -122,7 +122,6 @@ class FirebaseImageCacheManager extends AbstractFirebaseImageCacheManager {
       FirebaseImageObject object, final bytes) async {
     String path = basePath + "/" + object.remotePath;
     path = path.replaceAll("//", "/");
-    //print(join(basePath, object.remotePath)); Join isn't working?
     final localFile = await File(path).create(recursive: true);
     await localFile.writeAsBytes(bytes);
     object.localPath = localFile.path;
@@ -163,13 +162,4 @@ class FirebaseImageCacheManager extends AbstractFirebaseImageCacheManager {
       return await _dbInsert(object);
     }
   }
-
-  // DB delete currently not in use
-  // Future<int> _dbDelete(String uri) async {
-  //   return await db.delete(
-  //     table,
-  //     where: 'uri = ?',
-  //     whereArgs: [uri],
-  //   );
-  // }
 }
