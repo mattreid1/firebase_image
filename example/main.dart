@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_image/firebase_image.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,13 +13,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Firebase Image Provider example'),
+      home: const MyHomePage(title: 'Firebase Image Provider example'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 

@@ -83,17 +83,15 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
 
       if (localObject != null) {
         bytes = await cacheManager.localFileBytes(localObject);
-        if (bytes == null) {
-          bytes = await cacheManager.upsertRemoteFileToCache(
-              _imageObject, this.maxSizeBytes);
-        }
+        bytes ??= await cacheManager.upsertRemoteFileToCache(
+              _imageObject, maxSizeBytes);
       } else {
         bytes = await cacheManager.upsertRemoteFileToCache(
-            _imageObject, this.maxSizeBytes);
+            _imageObject, maxSizeBytes);
       }
     } else {
       bytes =
-          await cacheManager.remoteFileBytes(_imageObject, this.maxSizeBytes);
+          await cacheManager.remoteFileBytes(_imageObject, maxSizeBytes);
     }
 
     return bytes!;
@@ -122,13 +120,13 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     if (other.runtimeType != runtimeType) return false;
     final FirebaseImage typedOther = other;
     return _imageObject.uri == typedOther._imageObject.uri &&
-        this.scale == typedOther.scale;
+        scale == typedOther.scale;
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, this.scale);
+  int get hashCode => hashValues(_imageObject.uri, scale);
 
   @override
   String toString() =>
-      '$runtimeType("${_imageObject.uri}", scale: ${this.scale})';
+      '$runtimeType("${_imageObject.uri}", scale: $scale)';
 }
