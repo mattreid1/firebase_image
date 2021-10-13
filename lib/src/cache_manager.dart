@@ -26,7 +26,7 @@ class FirebaseImageCacheManager {
 
   Future<void> open() async {
     db = await openDatabase(
-      join((await getDatabasesPath())!, dbName),
+      join((await getDatabasesPath()), dbName),
       onCreate: (Database db, int version) async {
         await db.execute('''
           CREATE TABLE $table (
