@@ -1,3 +1,9 @@
+## [1.1.0] 23/12/2021
+
+- Merged [PR #33](https://github.com/mattreid1/firebase_image/pull/33) for pre-cache function
+- Updated example/main.dart file
+- Formatted code
+
 ## [1.0.2] 23/12/2021
 
 - Merged [PR #55](https://github.com/mattreid1/firebase_image/pull/55) to update dependancies

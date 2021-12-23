@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_image/firebase_image.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -31,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    FirebaseImage('gs://bucket123/otherUser123.jpg').preCache();
   }
 
   @override
@@ -40,12 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Image(
-        image: FirebaseImage(
-          'gs://bucket123/userIcon123.jpg',
-          shouldCache: true, // The image should be cached (default: True)
-          maxSizeBytes: 3000 * 1000, // 3MB max file size (default: 2.5MB)
-          cacheRefreshStrategy: CacheRefreshStrategy.NEVER // Switch off update checking
-        ),
+        image: FirebaseImage('gs://bucket123/userIcon123.jpg',
+            shouldCache: true, // The image should be cached (default: True)
+            maxSizeBytes: 3000 * 1000, // 3MB max file size (default: 2.5MB)
+            cacheRefreshStrategy:
+                CacheRefreshStrategy.NEVER // Switch off update checking
+            ),
         width: 100,
       ),
     );

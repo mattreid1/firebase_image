@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
-import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
