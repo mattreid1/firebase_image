@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 enum CacheRefreshStrategy {
   // BY_METADATA_DATE uses the Storage Object updated timestamp as a version
   // number and checks for updates every time.

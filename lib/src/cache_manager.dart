@@ -73,7 +73,7 @@ class FirebaseImageCacheManager {
       where: 'uri = ?',
       whereArgs: [object.uri],
     );
-    return maps.length > 0;
+    return maps.isNotEmpty;
   }
 
   Future<FirebaseImageObject?> get(String uri, FirebaseImage image) async {
@@ -88,11 +88,11 @@ class FirebaseImageCacheManager {
       where: 'uri = ?',
       whereArgs: [uri],
     );
-    if (maps.length > 0) {
+    if (maps.isNotEmpty) {
       FirebaseImageObject returnObject =
           FirebaseImageObject.fromMap(maps.first);
       returnObject.reference = getImageRef(returnObject, image.firebaseApp);
-      if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
+      if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
         checkForUpdate(returnObject, image); // Check for update in background
       }
       return returnObject;
@@ -114,7 +114,7 @@ class FirebaseImageCacheManager {
         -1;
     if (remoteVersion != object.version) {
       // If true, download new image for next load
-      await this.upsertRemoteFileToCache(object, image.maxSizeBytes);
+      await upsertRemoteFileToCache(object, image.maxSizeBytes);
     }
   }
 
@@ -147,7 +147,7 @@ class FirebaseImageCacheManager {
 
   Future<Uint8List?> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes) async {
-    if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
+    if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
       object.version = (await object.reference.getMetadata())
               .updated
               ?.millisecondsSinceEpoch ??
