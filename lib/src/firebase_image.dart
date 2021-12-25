@@ -69,7 +69,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
 
   static String _getImagePath(String location) {
     final uri = Uri.parse(location);
-    return uri.path;
+    return uri.path.replaceAll('%20', ' ');
   }
 
   static Reference _getImageRef(String location, FirebaseApp? firebaseApp) {
