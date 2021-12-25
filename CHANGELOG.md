@@ -1,3 +1,7 @@
+## [1.1.1] 25/12/2021
+
+- Merged [PR #45](https://github.com/mattreid1/firebase_image/pull/45) for null reference fix
+
 ## [1.1.0] 23/12/2021
 
 - Merged [PR #33](https://github.com/mattreid1/firebase_image/pull/33) for pre-cache function
