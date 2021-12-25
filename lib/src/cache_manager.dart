@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -89,20 +87,13 @@ class FirebaseImageCacheManager {
     );
     if (maps.isNotEmpty) {
       FirebaseImageObject returnObject =
-          FirebaseImageObject.fromMap(maps.first);
-      returnObject.reference = getImageRef(returnObject, image.firebaseApp);
+          FirebaseImageObject.fromMap(maps.first, image.firebaseApp);
       if (CacheRefreshStrategy.BY_METADATA_DATE == cacheRefreshStrategy) {
         checkForUpdate(returnObject, image); // Check for update in background
       }
       return returnObject;
     }
     return null;
-  }
-
-  Reference getImageRef(FirebaseImageObject object, FirebaseApp? firebaseApp) {
-    FirebaseStorage storage =
-        FirebaseStorage.instanceFor(app: firebaseApp, bucket: object.bucket);
-    return storage.ref().child(object.remotePath);
   }
 
   Future<void> checkForUpdate(
