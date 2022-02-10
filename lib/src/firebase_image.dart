@@ -49,9 +49,11 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           reference: _getImageRef(location, firebaseApp),
         );
 
+  Uint8List _precachedBytes;
+
   /// Returns the image as bytes
-  Future<Uint8List> getBytes() {
-    return _fetchImage();
+  Future<Uint8List> getBytes() async {
+    return _precachedBytes ?? await _fetchImage();
   }
 
   /// Pre-caches an image
@@ -102,6 +104,17 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     }
 
     return bytes!;
+  }
+
+  /// Precache this image.
+  Future<void> precache() async {
+    assert(shouldCache == true);
+    FirebaseImageCacheManager cacheManager = FirebaseImageCacheManager(
+      cacheRefreshStrategy,
+    );
+    await cacheManager.open();
+    _precachedBytes ??= await cacheManager.upsertRemoteFileToCache(
+        _imageObject, this.maxSizeBytes);
   }
 
   Future<Codec> _fetchImageCodec() async {
