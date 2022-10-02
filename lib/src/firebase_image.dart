@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -57,11 +56,6 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
           reference: _getImageRef(location, firebaseApp),
         );
 
-  /// Returns the image as bytes
-  Future<Uint8List> getBytes() {
-    return _fetchImage();
-  }
-
   static String _getBucket(String location) {
     final uri = Uri.parse(location);
     return '${uri.scheme}://${uri.authority}';
@@ -78,7 +72,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     return storage.ref().child(_getImagePath(location));
   }
 
-  Future<Uint8List> _fetchImage() async {
+  Future<ImmutableBuffer> _fetchImage() async {
     Uint8List? bytes;
     final cacheManager = FirebaseImageCacheManager(
       cacheRefreshStrategy,
@@ -106,12 +100,12 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       bytes = await cacheManager.remoteFileBytes(_imageObject, maxSizeBytes);
     }
 
-    return bytes!;
+    return ImmutableBuffer.fromUint8List(bytes!);
   }
 
   Future<Codec> _fetchImageCodec() async {
-    return await PaintingBinding.instance!
-        .instantiateImageCodec(await _fetchImage());
+    return await PaintingBinding.instance
+        .instantiateImageCodecFromBuffer(await _fetchImage());
   }
 
   @override
@@ -120,7 +114,11 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   @override
-  ImageStreamCompleter load(FirebaseImage key, DecoderCallback decode) {
+  ImageStreamCompleter load(
+      FirebaseImage key,
+      Future<Codec> Function(Uint8List,
+              {bool allowUpscaling, int? cacheHeight, int? cacheWidth})
+          decode) {
     return MultiFrameImageStreamCompleter(
       codec: key._fetchImageCodec(),
       scale: key.scale,
@@ -136,7 +134,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, scale);
+  int get hashCode => this.hashCode;
 
   @override
   String toString() => '$runtimeType("${_imageObject.uri}", scale: $scale)';

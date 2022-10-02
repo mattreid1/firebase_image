@@ -1,17 +1,18 @@
 name: firebase_image
 description: A cached Flutter ImageProvider for Firebase Cloud Storage image objects.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/mattreid1/firebase_image
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
+  flutter: 3.3.3
 
 dependencies:
   flutter:
     sdk: flutter
 
-  firebase_core: ^1.0.0
-  firebase_storage: ^8.0.0
+  firebase_core: ^1.24.0
+  firebase_storage: ^10.3.10
   sqflite: ^2.0.0+2
   path: ^1.8.0
   path_provider: ^2.0.1
