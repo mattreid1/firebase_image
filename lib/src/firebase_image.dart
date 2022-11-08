@@ -9,6 +9,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+T? _ambiguate<T>(T? value) => value;
+
 class FirebaseImage extends ImageProvider<FirebaseImage> {
   // Default: True. Specified whether or not an image should be cached (optional)
   final bool shouldCache;
@@ -105,7 +107,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   Future<Codec> _fetchImageCodec() async {
-    return await PaintingBinding.instance!
+    return await _ambiguate(PaintingBinding.instance)!
         .instantiateImageCodec(await _fetchImage());
   }
 
