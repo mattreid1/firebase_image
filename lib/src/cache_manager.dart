@@ -150,7 +150,7 @@ class FirebaseImageCacheManager {
 
   Future<FirebaseImageObject> putFile(
       FirebaseImageObject object, final bytes) async {
-    String path = basePath + "/" + object.remotePath;
+    String path = "$basePath/${object.remotePath}";
     path = path.replaceAll("//", "/");
     //print(join(basePath, object.remotePath)); Join isn't working?
     final localFile = await File(path).create(recursive: true);

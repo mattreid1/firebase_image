@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -105,8 +104,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   Future<Codec> _fetchImageCodec() async {
-    return await PaintingBinding.instance!
-        .instantiateImageCodec(await _fetchImage());
+    return await PaintingBinding.instance.instantiateImageCodecFromBuffer(
+        await ImmutableBuffer.fromUint8List(await _fetchImage()));
   }
 
   @override
@@ -115,7 +114,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   @override
-  ImageStreamCompleter load(FirebaseImage key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      FirebaseImage key, DecoderBufferCallback decode) {
     return MultiFrameImageStreamCompleter(
       codec: key._fetchImageCodec(),
       scale: key.scale,
@@ -131,7 +131,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, scale);
+  int get hashCode => Object.hash(_imageObject.uri, scale);
 
   @override
   String toString() => '$runtimeType("${_imageObject.uri}", scale: $scale)';

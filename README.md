@@ -2,9 +2,17 @@
 
 [![pub package](https://img.shields.io/pub/v/firebase_image.svg)](https://pub.dartlang.org/packages/firebase_image)
 
-
 A cached Flutter ImageProvider for Firebase Cloud Storage image objects.
 
+## Fork setup
+
+In `pubspec.yaml`:
+```yaml
+  firebase_image:
+    git:
+      url: https://github.com/tekartikdev/firebase_image
+    version: '>=0.4.0'
+```
 ## How to use
 
 Make sure you already have [Firebase set up](https://firebase.google.com/docs/flutter/setup) on all platforms you want to use this on.
