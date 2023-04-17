@@ -104,7 +104,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   Future<Codec> _fetchImageCodec() async {
-    return await PaintingBinding.instance.instantiateImageCodecWithSize(
+    return await PaintingBinding.instance.instantiateImageCodecFromBuffer(
         await ImmutableBuffer.fromUint8List(await _fetchImage()));
   }
 
@@ -114,8 +114,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   @override
-  ImageStreamCompleter loadImage(
-      FirebaseImage key, ImageDecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      FirebaseImage key, DecoderBufferCallback decode) {
     return MultiFrameImageStreamCompleter(
       codec: key._fetchImageCodec(),
       scale: key.scale,
